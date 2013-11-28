@@ -821,7 +821,8 @@ def coefplot(formula, data, groupby=None, intercept=False, ci=95,
 
     # Possibly ignore the intercept
     if not intercept:
-        coefs = coefs.ix[1:]
+        if 'Intercept' in coefs.index:
+            coefs = coefs.drop('Intercept')
 
     n_terms = len(coefs)
 
