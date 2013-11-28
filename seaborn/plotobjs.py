@@ -807,12 +807,17 @@ def coefplot(formula, data, groupby=None, intercept=False, ci=95,
     """
     alpha = 1 - ci / 100
     if groupby is None:
-        coefs = sf.ols(formula, data).fit().params
-        cis = sf.ols(formula, data).fit().conf_int(alpha)
+        models = sf.ols(formula, data).fit()
+        coefs = models.params
+        cis = models.conf_int(alpha)
     else:
         grouped = data.groupby(groupby)
-        coefs = grouped.apply(lambda d: sf.ols(formula, d).fit().params).T
-        cis = grouped.apply(lambda d: sf.ols(formula, d).fit().conf_int(alpha))
+        models = grouped.apply(lambda d: sf.ols(formula, d).fit())
+        coefs = models.apply(lambda d: d.params).T
+        cis = {}
+        for key, model in models.iteritems():
+            cis[key] = model.conf_int(alpha)
+        cis = pd.concat(cis.values(), keys=cis.keys())
 
     # Possibly ignore the intercept
     if not intercept:
