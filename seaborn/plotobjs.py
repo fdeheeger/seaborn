@@ -854,10 +854,13 @@ def coefplot(formula, data, groupby=None, intercept=False, ci=95,
         for ax, term in zip(axes, coefs.index):
             for i, group in enumerate(coefs.columns):
                 color = colors.next()
-                low, high = cis.ix[(group, term)]
-                ax.plot([i, i], [low, high], c=color,
-                        solid_capstyle="round", lw=2.5)
-                ax.plot(i, coefs.loc[term, group], "o", c=color, ms=8)
+                try:
+                    low, high = cis.ix[(group, term)]
+                    ax.plot([i, i], [low, high], c=color,
+                            solid_capstyle="round", lw=2.5)
+                    ax.plot(i, coefs.loc[term, group], "o", c=color, ms=8)
+                except KeyError:
+                    pass
             ax.set_xlim(-.5, n_groups - .5)
             ax.axhline(0, ls="--", c="dimgray")
             ax.set_title(term)
