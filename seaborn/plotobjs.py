@@ -786,7 +786,7 @@ def regplot(x, y, data=None, corr_func=stats.pearsonr, func_name=None,
 
 
 def coefplot(formula, data, groupby=None, intercept=False, ci=95,
-             palette="husl"):
+             palette="husl", sort=False):
     """Plot the coefficients from a linear model.
 
     Parameters
@@ -803,6 +803,8 @@ def coefplot(formula, data, groupby=None, intercept=False, ci=95,
         size of confidence intervals
     palette : seaborn color palette, optional
         palette for the horizonal plots
+    sort : bool, optional
+        if True coefs are displayed in ascending order
 
     """
     alpha = 1 - ci / 100
@@ -810,6 +812,8 @@ def coefplot(formula, data, groupby=None, intercept=False, ci=95,
         models = sf.ols(formula, data).fit()
         coefs = models.params
         cis = models.conf_int(alpha)
+        if sort:
+            coefs.sort()
     else:
         grouped = data.groupby(groupby)
         models = grouped.apply(lambda d: sf.ols(formula, d).fit())
